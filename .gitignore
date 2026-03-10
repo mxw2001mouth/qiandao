@@ -1,0 +1,34 @@
+# ── Claude Code 会话文件（不上传）──
+.claude/
+
+# ── 个人草稿（不上传）──
+10点说明.txt
+
+# ── App 目录下的构建产物和依赖 ──
+app/node_modules/
+app/dist/
+app/dist-ssr/
+
+# ── Capacitor 原生平台目录（由 CI 生成，不上传）──
+app/android/
+app/ios/
+
+# ── 本地临时文件 ──
+app/*.local
+app/.env
+app/.env.local
+app/.env.*.local
+
+# ── 仅用于浏览器调试的 WASM（不上传）──
+app/public/assets/sql-wasm.wasm
+
+# ── 编辑器 ──
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── macOS ──
+.DS_Store

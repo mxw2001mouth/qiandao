@@ -1,0 +1,44 @@
+workflows:
+  android-debug:
+    name: 签到管理 Android APK（调试版）
+    max_build_duration: 30
+    environment:
+      node: 22.15.0
+      java: 17
+    scripts:
+      - name: 安装 npm 依赖
+        script: |
+          cd app
+          npm ci
+
+      - name: 构建 Web 资源
+        script: |
+          cd app
+          npm run build
+
+      - name: 添加 Capacitor Android 平台
+        script: |
+          cd app
+          npx cap add android
+
+      - name: 同步 Web 资源到 Android
+        script: |
+          cd app
+          npx cap sync android
+
+      - name: 构建 APK
+        script: |
+          cd app/android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+    artifacts:
+      - app/android/app/build/outputs/apk/debug/app-debug.apk
+
+    publishing:
+      email:
+        recipients:
+          - your@email.com        # ← 改成你的邮箱，构建完成后发送下载链接
+        notify:
+          success: true
+          failure: true
