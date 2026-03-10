@@ -46,9 +46,17 @@ jobs:
         working-directory: app/android
         run: chmod +x gradlew
 
+      - name: 配置 Gradle 内存（防止 OOM）
+        working-directory: app/android
+        run: |
+          echo "org.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=512m" >> gradle.properties
+          echo "org.gradle.daemon=false" >> gradle.properties
+          echo "org.gradle.parallel=false" >> gradle.properties
+          echo "org.gradle.caching=false" >> gradle.properties
+
       - name: 构建 Debug APK
         working-directory: app/android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --max-workers 2 --stacktrace
 
       - name: 上传 APK 到 Artifacts
         uses: actions/upload-artifact@v4
