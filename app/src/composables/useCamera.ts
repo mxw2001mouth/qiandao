@@ -10,7 +10,8 @@ function addWatermark(base64: string): Promise<string> {
       const canvas = document.createElement('canvas')
       canvas.width = img.width
       canvas.height = img.height
-      const ctx = canvas.getContext('2d')!
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { resolve(base64); return }
       ctx.drawImage(img, 0, 0)
 
       const text = dayjs().format('YYYY-MM-DD HH:mm:ss')
@@ -26,8 +27,9 @@ function addWatermark(base64: string): Promise<string> {
       ctx.fillStyle = 'rgba(255,255,255,0.92)'
       ctx.fillText(text, padding, img.height - padding)
 
-      resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1])
+      resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1] ?? base64)
     }
+    img.onerror = () => resolve(base64) // 降级：保存原图
     img.src = `data:image/jpeg;base64,${base64}`
   })
 }

@@ -78,7 +78,7 @@ function getNameColor(name: string): string {
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return nameColors[Math.abs(hash) % nameColors.length]
+  return nameColors[Math.abs(hash) % nameColors.length] ?? '#6366F1'
 }
 
 // 课时颜色
