@@ -8,17 +8,21 @@ import {
   BarChart2,
   Settings,
 } from 'lucide-vue-next'
+import { useAuthStore } from '../../stores/auth'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 
-const tabs = [
-  { name: '签到', icon: CalendarCheck, path: '/attendance/today' },
-  { name: '学生', icon: Users, path: '/students' },
-  { name: '课时', icon: BookOpen, path: '/followup' },
-  { name: '统计', icon: BarChart2, path: '/stats/attendance' },
-  { name: '设置', icon: Settings, path: '/settings' },
+const allTabs = [
+  { name: '签到', icon: CalendarCheck, path: '/attendance/today', adminOnly: false },
+  { name: '学生', icon: Users, path: '/students', adminOnly: false },
+  { name: '课时', icon: BookOpen, path: '/followup', adminOnly: false },
+  { name: '统计', icon: BarChart2, path: '/stats/attendance', adminOnly: false },
+  { name: '设置', icon: Settings, path: '/settings', adminOnly: true },
 ]
+
+const tabs = computed(() => allTabs.filter(t => !t.adminOnly || auth.isAdmin))
 
 // 根据当前路由判断激活的 tab
 const activeIndex = computed(() => {
@@ -32,7 +36,7 @@ const activeIndex = computed(() => {
 })
 
 function navigateTo(index: number) {
-  router.push(tabs[index]!.path)
+  router.push(tabs.value[index]!.path)
 }
 </script>
 

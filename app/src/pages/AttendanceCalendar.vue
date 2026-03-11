@@ -31,8 +31,10 @@ const weekDays = ['一', '二', '三', '四', '五', '六', '日']
 // 当前视图的日期范围
 const dateRange = computed(() => {
   if (viewMode.value === 'week') {
-    // dayjs 默认周日为0，调整为周一开始
-    const start = currentDate.value.startOf('week').add(1, 'day')
+    // dayjs 默认周日=0，周一=1，计算本周一：若今天是周日(0)则往前6天，否则往前 (day-1) 天
+    const day = currentDate.value.day() // 0=周日
+    const daysToMonday = day === 0 ? 6 : day - 1
+    const start = currentDate.value.subtract(daysToMonday, 'day')
     const end = start.add(6, 'day')
     return { start, end }
   } else {

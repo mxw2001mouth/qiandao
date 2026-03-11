@@ -34,8 +34,8 @@ const showBack = computed(() => {
   return backPages.includes(route.name as string)
 })
 
-// 是否显示底部导航和顶部栏（已登录且非登录页）
-const showChrome = computed(() => auth.isLoggedIn && route.name !== 'Login')
+// 是否显示底部导航和顶部栏（已登录、非登录页、且页面未自带 chrome）
+const showChrome = computed(() => auth.isLoggedIn && route.name !== 'Login' && !route.meta.ownChrome)
 </script>
 
 <template>
@@ -44,11 +44,7 @@ const showChrome = computed(() => auth.isLoggedIn && route.name !== 'Login')
       v-if="showChrome"
       :title="pageTitle"
       :show-back="showBack"
-    >
-      <template #actions>
-        <slot name="header-actions" />
-      </template>
-    </AppHeader>
+    />
 
     <main class="flex-1 overflow-y-auto" :class="showChrome ? 'pb-20' : ''">
       <RouterView />

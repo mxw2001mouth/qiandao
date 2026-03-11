@@ -36,7 +36,7 @@ export async function batchCreateAttendance(records: {
   created_by: number
 }[]): Promise<void> {
   const statements = records.map(r => ({
-    statement: `INSERT INTO attendances (student_id, date, status, notes, photo_path, created_by)
+    statement: `INSERT OR IGNORE INTO attendances (student_id, date, status, notes, photo_path, created_by)
                 VALUES (?, ?, ?, ?, ?, ?)`,
     values: [r.student_id, r.date, r.status, r.notes, r.photo_path, r.created_by] as unknown[]
   }))

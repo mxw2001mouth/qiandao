@@ -1,0 +1,32 @@
+:root {
+  --color-primary: #6366F1;
+  --color-primary-dark: #4F46E5;
+  --color-primary-light: #818CF8;
+  --color-success: #22C55E;
+  --color-warning: #EAB308;
+  --color-danger: #EF4444;
+  --color-bg: #F8FAFC;
+  --color-card: #FFFFFF;
+  --color-text: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-text-placeholder: #CBD5E1;
+  --gradient-primary: linear-gradient(135deg, #6366F1, #818CF8);
+  --color-nav-inactive: #94A3B8;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  overscroll-behavior: none;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+input, textarea {
+  user-select: text;
+}
