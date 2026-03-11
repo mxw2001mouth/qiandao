@@ -63,7 +63,7 @@ async function submitPin() {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center bg-slate-50 px-6 pt-16">
+  <div class="min-h-screen flex flex-col items-center bg-slate-50 px-6" :style="{ paddingTop: 'calc(4rem + var(--safe-top))' }">
     <!-- App 图标 -->
     <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center mb-5 shadow-lg shadow-indigo-200">
       <CalendarCheck class="w-10 h-10 text-white" />

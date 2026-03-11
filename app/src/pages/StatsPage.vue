@@ -29,7 +29,7 @@ const isCurrentMonth = () => currentMonth.value.isSame(dayjs(), 'month')
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 pb-20">
+  <div class="min-h-screen bg-slate-50 pb-24">
     <AppHeader title="统计分析" />
 
     <div class="px-4 pt-3">

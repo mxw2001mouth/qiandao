@@ -1,0 +1,1 @@
+import{G as r}from"./index-xGzjrdQ3.js";async function c(e){return r.findWhere("purchases",t=>t.student_id===e).sort((t,s)=>s.date.localeCompare(t.date))}async function u(e){return r.insert("purchases",e).id}async function o(e){return r.findWhere("purchases",s=>s.date.startsWith(e)).reduce((s,a)=>s+a.amount,0)}export{o as a,u as c,c as g};

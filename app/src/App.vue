@@ -46,7 +46,10 @@ const showChrome = computed(() => auth.isLoggedIn && route.name !== 'Login' && !
       :show-back="showBack"
     />
 
-    <main class="flex-1 overflow-y-auto" :class="showChrome ? 'pb-20' : ''">
+    <main
+      class="flex-1 overflow-y-auto"
+      :style="showChrome ? { paddingBottom: 'calc(5rem + var(--safe-bottom))' } : {}"
+    >
       <RouterView />
     </main>
 

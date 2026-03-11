@@ -19,7 +19,7 @@ const allTabs = [
   { name: '学生', icon: Users, path: '/students', adminOnly: false },
   { name: '课时', icon: BookOpen, path: '/followup', adminOnly: false },
   { name: '统计', icon: BarChart2, path: '/stats/attendance', adminOnly: false },
-  { name: '设置', icon: Settings, path: '/settings', adminOnly: true },
+  { name: '设置', icon: Settings, path: '/settings', adminOnly: false },
 ]
 
 const tabs = computed(() => allTabs.filter(t => !t.adminOnly || auth.isAdmin))

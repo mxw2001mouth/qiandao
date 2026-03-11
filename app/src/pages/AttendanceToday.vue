@@ -6,18 +6,12 @@ import {
   CheckCircle,
   Clock,
   FileText,
-  XCircle,
-  Users,
-  UserCheck,
-  AlertTriangle,
 } from 'lucide-vue-next'
 import AppHeader from '../components/layout/AppHeader.vue'
 import BottomNav from '../components/layout/BottomNav.vue'
 import StatCard from '../components/ui/StatCard.vue'
 import AppCard from '../components/ui/AppCard.vue'
 import AppButton from '../components/ui/AppButton.vue'
-import AppAvatar from '../components/ui/AppAvatar.vue'
-import AppBadge from '../components/ui/AppBadge.vue'
 import AppModal from '../components/ui/AppModal.vue'
 import { useAttendanceStore } from '../stores/attendance'
 import { useStudentStore } from '../stores/student'
@@ -66,28 +60,42 @@ const stats = computed(() => {
   return { total, present, late, leave, absent, attended, rate }
 })
 
-// 签到状态按钮配置
+// 签到状态按钮（去掉旷课）
 const statusButtons: { status: AttendanceStatus; label: string; icon: typeof CheckCircle; activeClass: string }[] = [
   { status: 'present', label: '到课', icon: CheckCircle, activeClass: 'bg-green-500 text-white' },
   { status: 'late', label: '迟到', icon: Clock, activeClass: 'bg-yellow-500 text-white' },
   { status: 'leave', label: '请假', icon: FileText, activeClass: 'bg-blue-500 text-white' },
-  { status: 'absent', label: '旷课', icon: XCircle, activeClass: 'bg-red-500 text-white' },
 ]
 
-// 课时徽章
-function hoursLabel(hours: number): string {
-  return `${hours}课时`
+// 根据姓名 hash 生成一致的背景色
+const nameColors = [
+  '#F97316', '#EF4444', '#EC4899', '#8B5CF6',
+  '#6366F1', '#3B82F6', '#14B8A6', '#22C55E',
+  '#F59E0B', '#E11D48', '#7C3AED', '#0EA5E9',
+]
+function getNameColor(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  return nameColors[Math.abs(hash) % nameColors.length]
+}
+
+// 课时颜色
+function hoursClass(hours: number): string {
+  const color = studentStore.getStudentColor(hours)
+  if (color === 'danger') return 'text-red-500'
+  if (color === 'warning') return 'text-yellow-500'
+  return 'text-green-600'
 }
 
 // 设置签到状态
 function setStatus(studentId: number, status: AttendanceStatus) {
   if (alreadySubmitted.value) return
-  // 请假时弹出备注框
   if (status === 'leave') {
     currentNoteStudentId.value = studentId
     noteText.value = attendanceStore.getStatus(studentId)?.notes || ''
     showNotesModal.value = true
-    // 先设置状态
     attendanceStore.setStatus(studentId, status)
     return
   }
@@ -123,7 +131,6 @@ async function handleSubmit() {
   try {
     await attendanceStore.submitAll(today)
     alreadySubmitted.value = true
-    // 刷新学生数据（课时已变化）
     await studentStore.fetchStudents()
   } catch (e) {
     console.error('提交失败:', e)
@@ -139,14 +146,12 @@ onMounted(async () => {
   isLoading.value = true
   try {
     await studentStore.fetchStudents()
-    // 检查今日是否已有签到
     const exists = await hasAttendanceForDate(today)
     if (exists) {
       await attendanceStore.fetchByDate(today)
       alreadySubmitted.value = true
     } else {
       attendanceStore.reset()
-      // 默认所有学生为"到课"
       attendanceStore.setAllPresent(studentStore.activeStudents.map(s => s.id))
     }
   } finally {
@@ -180,9 +185,9 @@ onMounted(async () => {
 
     <!-- 统计卡片 -->
     <div class="grid grid-cols-3 gap-2 px-4 mb-4">
-      <StatCard :value="stats.total" label="应到" :icon="Users" />
-      <StatCard :value="stats.attended" label="实到" :icon="UserCheck" :gradient="true" />
-      <StatCard :value="`${stats.rate}%`" label="出勤率" :icon="AlertTriangle" />
+      <StatCard :value="stats.total" label="应到" />
+      <StatCard :value="stats.attended" label="实到" :gradient="true" />
+      <StatCard :value="`${stats.rate}%`" label="出勤率" />
     </div>
 
     <!-- 详细统计条 -->
@@ -199,10 +204,6 @@ onMounted(async () => {
         <span class="text-lg font-bold text-blue-600">{{ stats.leave }}</span>
         <p class="text-xs text-slate-500">请假</p>
       </div>
-      <div class="text-center">
-        <span class="text-lg font-bold text-red-600">{{ stats.absent }}</span>
-        <p class="text-xs text-slate-500">旷课</p>
-      </div>
     </div>
 
     <!-- 已提交提示 -->
@@ -216,36 +217,22 @@ onMounted(async () => {
       <AppCard
         v-for="student in sortedStudents"
         :key="student.id"
+        class="!p-3"
         :class="student.remaining_hours <= 0 ? 'ring-2 ring-red-300' : ''"
       >
-        <div class="flex items-center gap-3">
-          <!-- 头像 -->
-          <AppAvatar :name="student.name" size="md" />
-
-          <!-- 姓名和课时 -->
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="font-medium text-slate-800 truncate">{{ student.name }}</span>
-              <AppBadge
-                :label="hoursLabel(student.remaining_hours)"
-                :variant="studentStore.getStudentColor(student.remaining_hours)"
-              />
-            </div>
-            <!-- 请假备注 -->
-            <p
-              v-if="attendanceStore.getStatus(student.id)?.status === 'leave' && attendanceStore.getStatus(student.id)?.notes"
-              class="text-xs text-blue-500 mt-0.5 truncate"
-            >
-              备注：{{ attendanceStore.getStatus(student.id)?.notes }}
-            </p>
-          </div>
-
-          <!-- 签到状态按钮组 -->
+        <!-- 第一行：彩色姓名标签 + 操作按钮 -->
+        <div class="flex items-center justify-between gap-2">
+          <span
+            class="text-xs font-medium px-2 py-1 rounded-md text-white shrink-0 max-w-[7rem] truncate"
+            :style="{ backgroundColor: getNameColor(student.name) }"
+          >
+            {{ student.name }}
+          </span>
           <div class="flex gap-1 shrink-0">
             <button
               v-for="btn in statusButtons"
               :key="btn.status"
-              class="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150"
+              class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150"
               :class="attendanceStore.getStatus(student.id)?.status === btn.status
                 ? btn.activeClass
                 : 'bg-slate-100 text-slate-400'"
@@ -253,15 +240,32 @@ onMounted(async () => {
               :title="btn.label"
               @click="setStatus(student.id, btn.status)"
             >
-              <component :is="btn.icon" class="w-4 h-4" />
+              <component :is="btn.icon" class="w-3.5 h-3.5" />
             </button>
           </div>
+        </div>
+        <!-- 第二行：课时数字 + 备注 -->
+        <div class="flex items-center gap-2 mt-1.5">
+          <span
+            class="text-sm font-bold tabular-nums"
+            :class="hoursClass(student.remaining_hours)"
+          >{{ student.remaining_hours }}</span>
+          <p
+            v-if="attendanceStore.getStatus(student.id)?.status === 'leave' && attendanceStore.getStatus(student.id)?.notes"
+            class="text-xs text-blue-500 truncate"
+          >
+            {{ attendanceStore.getStatus(student.id)?.notes }}
+          </p>
         </div>
       </AppCard>
     </div>
 
     <!-- 提交按钮 -->
-    <div v-if="!alreadySubmitted && !isLoading" class="fixed bottom-20 left-0 right-0 px-4 z-30">
+    <div
+      v-if="!alreadySubmitted && !isLoading"
+      class="fixed left-0 right-0 px-4 z-30"
+      :style="{ bottom: 'calc(var(--safe-bottom) + 5rem)' }"
+    >
       <AppButton
         class="w-full"
         size="lg"
@@ -281,7 +285,6 @@ onMounted(async () => {
           <p>到课：<span class="font-bold text-green-600">{{ stats.present }}人</span></p>
           <p>迟到：<span class="font-bold text-yellow-600">{{ stats.late }}人</span></p>
           <p>请假：<span class="font-bold text-blue-600">{{ stats.leave }}人</span></p>
-          <p>旷课：<span class="font-bold text-red-600">{{ stats.absent }}人</span></p>
         </div>
         <p class="text-xs text-slate-400">提交后将自动扣除到课和迟到学生各1课时</p>
         <div class="flex gap-3 pt-2">

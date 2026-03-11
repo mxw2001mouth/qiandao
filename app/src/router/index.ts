@@ -116,7 +116,7 @@ const router = createRouter({
       path: '/settings',
       name: 'Settings',
       component: () => import('../pages/Settings.vue'),
-      meta: { title: '设置', requiresAuth: true, roles: ['admin'] }
+      meta: { title: '设置', requiresAuth: true, roles: ['admin', 'teacher'] }
     },
   ]
 })

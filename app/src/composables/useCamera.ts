@@ -2,6 +2,36 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import dayjs from 'dayjs'
 
+// 在图片上叠加日期时间水印
+function addWatermark(base64: string): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(img, 0, 0)
+
+      const text = dayjs().format('YYYY-MM-DD HH:mm:ss')
+      const fontSize = Math.max(18, Math.round(img.width * 0.034))
+      const padding = Math.round(img.width * 0.025)
+
+      ctx.font = `bold ${fontSize}px sans-serif`
+      // 先画半透明黑色描边，再画白色文字，确保在各种背景下可读
+      ctx.strokeStyle = 'rgba(0,0,0,0.65)'
+      ctx.lineWidth = fontSize * 0.15
+      ctx.lineJoin = 'round'
+      ctx.strokeText(text, padding, img.height - padding)
+      ctx.fillStyle = 'rgba(255,255,255,0.92)'
+      ctx.fillText(text, padding, img.height - padding)
+
+      resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1])
+    }
+    img.src = `data:image/jpeg;base64,${base64}`
+  })
+}
+
 // 拍摄合影并保存到本地
 export async function takeGroupPhoto(): Promise<string> {
   const photo = await Camera.getPhoto({
@@ -17,11 +47,13 @@ export async function takeGroupPhoto(): Promise<string> {
     throw new Error('拍照失败：未获取到图片数据')
   }
 
+  const watermarked = await addWatermark(photo.base64String)
+
   // 保存到 app 私有目录
   const fileName = `photos/${dayjs().format('YYYY-MM-DD')}.jpg`
   const savedFile = await Filesystem.writeFile({
     path: fileName,
-    data: photo.base64String,
+    data: watermarked,
     directory: Directory.Data,
     recursive: true,
   })
