@@ -12,6 +12,7 @@ app/dist-ssr/
 # ── Capacitor 原生平台目录（由 CI 生成，不上传）──
 app/android/
 app/ios/
+Demo/
 
 # ── 本地临时文件 ──
 app/*.local
