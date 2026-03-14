@@ -14,6 +14,7 @@ import AppAvatar from '../components/ui/AppAvatar.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppModal from '../components/ui/AppModal.vue'
+import PhotoViewer from '../components/ui/PhotoViewer.vue'
 import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
 
 const route = useRoute()
@@ -334,9 +335,7 @@ async function downloadPhoto() {
       </div>
     </AppModal>
 
-    <!-- 合影放大查看 -->
-    <AppModal v-model:visible="showPhotoModal" title="班级合影">
-      <img v-if="dayModalPhoto" :src="dayModalPhoto" class="w-full rounded-xl" alt="班级合影" />
-    </AppModal>
+    <!-- 合影放大查看（支持捏合缩放） -->
+    <PhotoViewer v-model:visible="showPhotoModal" :src="dayModalPhoto" title="班级合影" />
   </div>
 </template>

@@ -166,23 +166,13 @@ function goToBackup() {
       </button>
     </AppCard>
 
-    <!-- 关于 -->
-    <AppCard>
-      <div class="text-center text-xs text-slate-400 space-y-1">
-        <p>
-          <span class="text-indigo-600 font-semibold text-xs">时光微醉</span>
-          <span class="text-slate-400 text-xs">-签到管理系统 v1.0</span>
-        </p>
-        <p>培训机构学生签到与课时管理-Mazh</p>
-      </div>
-    </AppCard>
-
     <!-- 退出登录 -->
     <AppCard>
       <div class="text-center text-xs text-slate-500 space-y-1">
         <p class="font-semibold text-slate-700">{{ APP_NAME }} {{ APP_VERSION }}</p>
-        <p>作者信息：{{ AUTHOR_NAME }}</p>
-        <p>联系方式：{{ AUTHOR_CONTACT }}</p>
+        <p>作 者：{{ AUTHOR_NAME }}</p>
+        <p>电 话：{{ AUTHOR_CONTACT }}</p>
+        <p>培训机构学生签到与课时管理V1.0</p>
       </div>
     </AppCard>
 

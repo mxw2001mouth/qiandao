@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { Capacitor } from '@capacitor/core'
 import type { AttendanceStatus } from '../types'
 import * as attendanceRepo from '../db/repositories/attendanceRepository'
 import * as studentRepo from '../db/repositories/studentRepository'
@@ -35,16 +36,18 @@ export const useAttendanceStore = defineStore('attendance', () => {
   async function submitAll(date: string): Promise<void> {
     const auth = useAuthStore()
     if (!auth.userId) throw new Error('未登录')
-    if (!groupPhoto.value) throw new Error('请先拍摄合影后再提交签到')
+    if (Capacitor.isNativePlatform() && !groupPhoto.value) throw new Error('请先拍摄合影后再提交签到')
 
     isSubmitting.value = true
     try {
+      // 只有 native 平台才有真实 file:// 路径；浏览器预览不写入路径
+      const photoPath = Capacitor.isNativePlatform() ? (groupPhoto.value || '') : ''
       const records = Array.from(todayAttendances.value.entries()).map(([studentId, data]) => ({
         student_id: studentId,
         date,
         status: data.status,
         notes: data.notes,
-        photo_path: groupPhoto.value || '',
+        photo_path: photoPath,
         created_by: auth.userId!,
       }))
 
@@ -75,13 +78,9 @@ export const useAttendanceStore = defineStore('attendance', () => {
         notes: record.notes,
       })
     }
-    // 取第一条记录的照片路径作为合影
-    const firstRecord = records[0]
-    if (firstRecord && firstRecord.photo_path) {
-      groupPhoto.value = firstRecord.photo_path
-    } else {
-      groupPhoto.value = null
-    }
+    // 取第一条 photo_path 非空的记录（防止首条恰好为空时丢失合影）
+    const photoRecord = records.find(r => !!r.photo_path)
+    groupPhoto.value = photoRecord?.photo_path ?? null
   }
 
   // 重置状态（新的一天）

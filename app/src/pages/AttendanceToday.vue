@@ -15,9 +15,11 @@ import StatCard from '../components/ui/StatCard.vue'
 import AppCard from '../components/ui/AppCard.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppModal from '../components/ui/AppModal.vue'
+import PhotoViewer from '../components/ui/PhotoViewer.vue'
 import { useAttendanceStore } from '../stores/attendance'
 import { useStudentStore } from '../stores/student'
 import { takeGroupPhoto, readPhoto } from '../composables/useCamera'
+import { Capacitor } from '@capacitor/core'
 import { hasAttendanceForDate } from '../db/repositories/attendanceRepository'
 import type { AttendanceStatus } from '../types'
 
@@ -166,7 +168,8 @@ const shouldShowSubmitButton = computed(() => {
   return !alreadySubmitted.value && !isLoading.value && stats.value.total > 0
 })
 function handleSubmitClick() {
-  if (!attendanceStore.groupPhoto) {
+  // native 设备必须先拍合影；浏览器预览环境跳过此限制
+  if (Capacitor.isNativePlatform() && !attendanceStore.groupPhoto) {
     showNeedPhotoModal.value = true
     return
   }
@@ -401,10 +404,8 @@ onMounted(async () => {
       </div>
     </AppModal>
 
-    <!-- 合影全屏查看 -->
-    <AppModal v-model:visible="showPhotoModal" title="今日合影">
-      <img v-if="photoDataUri" :src="photoDataUri" class="w-full rounded-xl" alt="今日合影" />
-    </AppModal>
+    <!-- 合影全屏查看（支持捏合缩放） -->
+    <PhotoViewer v-model:visible="showPhotoModal" :src="photoDataUri" title="今日合影" />
 
     <BottomNav />
   </div>

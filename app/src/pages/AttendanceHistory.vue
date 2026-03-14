@@ -13,6 +13,7 @@ import { useAuthStore } from '../stores/auth'
 import * as attendanceRepo from '../db/repositories/attendanceRepository'
 import * as studentRepo from '../db/repositories/studentRepository'
 import { readPhoto } from '../composables/useCamera'
+import PhotoViewer from '../components/ui/PhotoViewer.vue'
 import type { Attendance, AttendanceStatus } from '../types'
 
 const authStore = useAuthStore()
@@ -342,10 +343,8 @@ onMounted(() => {
       </div>
     </AppModal>
 
-    <!-- 合影查看弹窗 -->
-    <AppModal v-model:visible="showPhotoModal" title="班级合影">
-      <img v-if="photoUrl" :src="photoUrl" class="w-full rounded-xl" alt="班级合影" />
-    </AppModal>
+    <!-- 合影查看（支持捏合缩放） -->
+    <PhotoViewer v-model:visible="showPhotoModal" :src="photoUrl" title="班级合影" />
 
     <BottomNav />
   </div>

@@ -46,7 +46,8 @@ export async function takeGroupPhoto(): Promise<string> {
   assertCameraAllowedInCurrentRuntime()
 
   if (!Capacitor.isNativePlatform()) {
-    return 'mock://browser-photo'
+    // 浏览器环境无法真正拍照，返回空字符串，不写入 DB
+    return ''
   }
 
   const photo = await Camera.getPhoto({
@@ -56,6 +57,7 @@ export async function takeGroupPhoto(): Promise<string> {
     source: CameraSource.Camera,
     width: 1280,
     height: 960,
+    // saveToGallery: true,  // TODO: 待实现——需换用 @capacitor-community/media 插件以支持指定相册名称（"签到管理"），当前 saveToGallery 会混入系统相机胶卷无专属目录，暂不启用
   })
 
   if (!photo.base64String) {
@@ -76,6 +78,9 @@ export async function takeGroupPhoto(): Promise<string> {
 }
 
 export async function readPhoto(path: string): Promise<string | null> {
+  // 空路径或旧版 mock:// 路径直接返回 null，不进入 Filesystem API
+  if (!path || path.startsWith('mock://')) return null
+
   if (REQUIRE_NATIVE_RUNTIME && !Capacitor.isNativePlatform()) {
     throw new Error('Native runtime mode enabled. Browser photo read fallback is disabled.')
   }
@@ -83,10 +88,12 @@ export async function readPhoto(path: string): Promise<string | null> {
   if (!Capacitor.isNativePlatform()) return null
 
   try {
-    const result = await Filesystem.readFile({
-      path,
-      directory: Directory.Data,
-    })
+    // savedFile.uri 返回的是完整 file:// URI，不能再指定 directory
+    // 相对路径（旧数据兼容）才需要指定 directory
+    const isFullUri = path.startsWith('file://')
+    const result = await Filesystem.readFile(
+      isFullUri ? { path } : { path, directory: Directory.Data }
+    )
 
     if (typeof result.data === 'string') {
       return `data:image/jpeg;base64,${result.data}`
