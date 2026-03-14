@@ -19,6 +19,9 @@ app/*.local
 app/.env
 app/.env.local
 app/.env.*.local
+app/*.err
+app/*.log
+*.log
 
 # ── 仅用于浏览器调试的 WASM（不上传）──
 app/public/assets/sql-wasm.wasm
