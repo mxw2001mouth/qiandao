@@ -1,8 +1,28 @@
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite'
+﻿import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite'
 import { Capacitor } from '@capacitor/core'
 import { CREATE_TABLES_SQL, SEED_DATA_SQL, TEST_SEED_SQL } from './schema'
+import { REQUIRE_NATIVE_RUNTIME } from '../config/runtimeMode'
 
 const DB_NAME = 'qiandao_db'
+
+type WebDbModule = {
+  initWebDatabase: () => Promise<void>
+  webQuery: <T>(sql: string, params?: unknown[]) => T[]
+  webRun: (sql: string, params?: unknown[]) => { changes: number; lastId: number }
+  webExecuteSet: (statements: { statement: string; values: unknown[] }[]) => void
+}
+
+let webDbModulePromise: Promise<WebDbModule> | null = null
+
+async function loadWebDbModule(): Promise<WebDbModule> {
+  if (REQUIRE_NATIVE_RUNTIME) {
+    throw new Error('Web database module is disabled in native runtime mode.')
+  }
+  if (!webDbModulePromise) {
+    webDbModulePromise = import('./webDatabase')
+  }
+  return webDbModulePromise
+}
 
 class Database {
   private sqlite: SQLiteConnection
@@ -13,21 +33,22 @@ class Database {
     this.sqlite = new SQLiteConnection(CapacitorSQLite)
   }
 
-  // 初始化数据库连接
+  private ensureWebFallbackAllowed(): void {
+    if (REQUIRE_NATIVE_RUNTIME && !Capacitor.isNativePlatform()) {
+      throw new Error('Native SQLite mode is enabled. Browser fallback has been blocked.')
+    }
+  }
+
   async init(): Promise<void> {
     if (this.initialized) return
 
-    const platform = Capacitor.getPlatform()
+    this.ensureWebFallbackAllowed()
 
-    // Web 平台需要使用 jeep-sqlite
-    if (platform === 'web') {
-      const jeepEl = document.querySelector('jeep-sqlite')
-      if (!jeepEl) {
-        const el = document.createElement('jeep-sqlite')
-        document.body.appendChild(el)
-        await customElements.whenDefined('jeep-sqlite')
-      }
-      await this.sqlite.initWebStore()
+    if (!Capacitor.isNativePlatform()) {
+      const { initWebDatabase } = await loadWebDbModule()
+      await initWebDatabase()
+      this.initialized = true
+      return
     }
 
     const ret = await this.sqlite.checkConnectionsConsistency()
@@ -45,70 +66,84 @@ class Database {
     this.initialized = true
   }
 
-  // 创建数据表
   private async createTables(): Promise<void> {
     for (const sql of CREATE_TABLES_SQL) {
       await this.getDb().execute(sql)
     }
   }
 
-  // 插入初始数据
   private async seedData(): Promise<void> {
-    // 检查是否已有用户数据，有则跳过（避免重复插入）
     const result = await this.getDb().query('SELECT COUNT(*) as count FROM users')
     if (result.values && result.values[0] && result.values[0].count > 0) {
       return
     }
-    // 写入账号与系统配置
+
     for (const sql of SEED_DATA_SQL) {
       await this.getDb().execute(sql)
     }
-    // 写入测试数据（15名学生 + 10次课签到 + 购课记录 + 跟进记录）
+
     for (const sql of TEST_SEED_SQL) {
       await this.getDb().execute(sql)
     }
   }
 
-  // 获取数据库连接
   getDb(): SQLiteDBConnection {
     if (!this.db) {
-      throw new Error('数据库未初始化，请先调用 init()')
+      throw new Error('Database not initialized. Call init() first.')
     }
     return this.db
   }
 
-  // 执行查询，返回结果数组
   async query<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]> {
+    this.ensureWebFallbackAllowed()
+
+    if (!Capacitor.isNativePlatform()) {
+      const { webQuery } = await loadWebDbModule()
+      return webQuery<T>(sql, params ?? [])
+    }
+
     const result = await this.getDb().query(sql, params as unknown[])
     return (result.values || []) as T[]
   }
 
-  // 执行写操作（INSERT/UPDATE/DELETE）
   async run(sql: string, params?: unknown[]): Promise<{ changes: number; lastId: number }> {
+    this.ensureWebFallbackAllowed()
+
+    if (!Capacitor.isNativePlatform()) {
+      const { webRun } = await loadWebDbModule()
+      return webRun(sql, params ?? [])
+    }
+
     const result = await this.getDb().run(sql, params as unknown[])
     return {
       changes: result.changes?.changes ?? 0,
-      lastId: result.changes?.lastId ?? 0
+      lastId: result.changes?.lastId ?? 0,
     }
   }
 
-  // 执行多条 SQL（事务）
   async executeSet(statements: { statement: string; values: unknown[] }[]): Promise<void> {
+    this.ensureWebFallbackAllowed()
+
+    if (!Capacitor.isNativePlatform()) {
+      const { webExecuteSet } = await loadWebDbModule()
+      webExecuteSet(statements)
+      return
+    }
+
     await this.getDb().executeSet(statements as never)
   }
 
-  // 导入 JSON 数据（用于恢复备份）
   async importJson(jsonString: string): Promise<void> {
     await this.sqlite.importFromJson(jsonString)
   }
 
-  // 获取 SQLiteConnection（用于高级操作）
   getSqliteConnection(): SQLiteConnection {
     return this.sqlite
   }
 
-  // 关闭连接
   async close(): Promise<void> {
+    if (!Capacitor.isNativePlatform()) return
+
     if (this.db) {
       await this.db.close()
       await this.sqlite.closeConnection(DB_NAME, false)
@@ -118,5 +153,4 @@ class Database {
   }
 }
 
-// 单例导出
 export const database = new Database()

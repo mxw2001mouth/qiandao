@@ -1,8 +1,9 @@
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
+﻿import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { Filesystem, Directory } from '@capacitor/filesystem'
+import { Capacitor } from '@capacitor/core'
 import dayjs from 'dayjs'
+import { REQUIRE_NATIVE_RUNTIME } from '../config/runtimeMode'
 
-// 在图片上叠加日期时间水印
 function addWatermark(base64: string): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image()
@@ -12,6 +13,7 @@ function addWatermark(base64: string): Promise<string> {
       canvas.height = img.height
       const ctx = canvas.getContext('2d')
       if (!ctx) { resolve(base64); return }
+
       ctx.drawImage(img, 0, 0)
 
       const text = dayjs().format('YYYY-MM-DD HH:mm:ss')
@@ -19,7 +21,6 @@ function addWatermark(base64: string): Promise<string> {
       const padding = Math.round(img.width * 0.025)
 
       ctx.font = `bold ${fontSize}px sans-serif`
-      // 先画半透明黑色描边，再画白色文字，确保在各种背景下可读
       ctx.strokeStyle = 'rgba(0,0,0,0.65)'
       ctx.lineWidth = fontSize * 0.15
       ctx.lineJoin = 'round'
@@ -29,13 +30,25 @@ function addWatermark(base64: string): Promise<string> {
 
       resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1] ?? base64)
     }
-    img.onerror = () => resolve(base64) // 降级：保存原图
+
+    img.onerror = () => resolve(base64)
     img.src = `data:image/jpeg;base64,${base64}`
   })
 }
 
-// 拍摄合影并保存到本地
+function assertCameraAllowedInCurrentRuntime(): void {
+  if (REQUIRE_NATIVE_RUNTIME && !Capacitor.isNativePlatform()) {
+    throw new Error('Native runtime mode enabled. Browser mock camera is disabled.')
+  }
+}
+
 export async function takeGroupPhoto(): Promise<string> {
+  assertCameraAllowedInCurrentRuntime()
+
+  if (!Capacitor.isNativePlatform()) {
+    return 'mock://browser-photo'
+  }
+
   const photo = await Camera.getPhoto({
     quality: 65,
     allowEditing: false,
@@ -46,12 +59,11 @@ export async function takeGroupPhoto(): Promise<string> {
   })
 
   if (!photo.base64String) {
-    throw new Error('拍照失败：未获取到图片数据')
+    throw new Error('Failed to capture photo: empty image data.')
   }
 
   const watermarked = await addWatermark(photo.base64String)
 
-  // 保存到 app 私有目录
   const fileName = `photos/${dayjs().format('YYYY-MM-DD')}.jpg`
   const savedFile = await Filesystem.writeFile({
     path: fileName,
@@ -63,16 +75,23 @@ export async function takeGroupPhoto(): Promise<string> {
   return savedFile.uri
 }
 
-// 读取照片（返回 base64 data URI）
 export async function readPhoto(path: string): Promise<string | null> {
+  if (REQUIRE_NATIVE_RUNTIME && !Capacitor.isNativePlatform()) {
+    throw new Error('Native runtime mode enabled. Browser photo read fallback is disabled.')
+  }
+
+  if (!Capacitor.isNativePlatform()) return null
+
   try {
     const result = await Filesystem.readFile({
       path,
       directory: Directory.Data,
     })
+
     if (typeof result.data === 'string') {
       return `data:image/jpeg;base64,${result.data}`
     }
+
     return null
   } catch {
     return null

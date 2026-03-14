@@ -12,7 +12,7 @@ const statusLabels: Record<AttendanceStatus, string> = {
   present: '到课',
   late: '迟到',
   leave: '请假',
-  absent: '旷课',
+  absent: '请假',
 }
 
 // 确保导出目录存在

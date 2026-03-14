@@ -35,6 +35,7 @@ export const useAttendanceStore = defineStore('attendance', () => {
   async function submitAll(date: string): Promise<void> {
     const auth = useAuthStore()
     if (!auth.userId) throw new Error('未登录')
+    if (!groupPhoto.value) throw new Error('请先拍摄合影后再提交签到')
 
     isSubmitting.value = true
     try {

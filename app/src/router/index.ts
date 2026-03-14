@@ -34,7 +34,7 @@ const router = createRouter({
       path: '/attendance/history',
       name: 'AttendanceHistory',
       component: () => import('../pages/AttendanceHistory.vue'),
-      meta: { title: '签到记录', requiresAuth: true, roles: ['admin'], ownChrome: true }
+      meta: { title: '签到记录', requiresAuth: true, roles: ['admin', 'teacher'], ownChrome: true }
     },
     {
       path: '/attendance/calendar',

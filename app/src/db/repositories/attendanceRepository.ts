@@ -106,6 +106,25 @@ export async function getAttendanceByDateRange(startDate: string, endDate: strin
   )
 }
 
+// 获取最近有签到记录的日期列表（用于历史页快速切换）
+export async function getAttendanceDates(limit: number = 30): Promise<{
+  date: string
+  count: number
+  photo_path: string
+}[]> {
+  return database.query<{ date: string; count: number; photo_path: string }>(
+    `SELECT
+       date,
+       COUNT(*) as count,
+       COALESCE(MAX(CASE WHEN photo_path <> '' THEN photo_path ELSE NULL END), '') as photo_path
+     FROM attendances
+     GROUP BY date
+     ORDER BY date DESC
+     LIMIT ?`,
+    [limit]
+  )
+}
+
 // 获取某日签到统计
 export async function getDailyStats(date: string): Promise<{
   total: number
@@ -118,6 +137,7 @@ export async function getDailyStats(date: string): Promise<{
     `SELECT status, COUNT(*) as count FROM attendances WHERE date = ? GROUP BY status`,
     [date]
   )
+  // 口径统一：absent 归并到 leave（请假）
   const stats = { total: 0, present: 0, late: 0, leave: 0, absent: 0 }
   for (const row of rows) {
     const count = row.count
@@ -125,7 +145,7 @@ export async function getDailyStats(date: string): Promise<{
     if (row.status === 'present') stats.present = count
     else if (row.status === 'late') stats.late = count
     else if (row.status === 'leave') stats.leave = count
-    else if (row.status === 'absent') stats.absent = count
+    else if (row.status === 'absent') stats.leave += count
   }
   return stats
 }
@@ -142,6 +162,7 @@ export async function getStudentStats(studentId: number): Promise<{
     `SELECT status, COUNT(*) as count FROM attendances WHERE student_id = ? GROUP BY status`,
     [studentId]
   )
+  // 口径统一：absent 归并到 leave（请假）
   const stats = { total: 0, present: 0, late: 0, leave: 0, absent: 0 }
   for (const row of rows) {
     const count = row.count
@@ -149,7 +170,7 @@ export async function getStudentStats(studentId: number): Promise<{
     if (row.status === 'present') stats.present = count
     else if (row.status === 'late') stats.late = count
     else if (row.status === 'leave') stats.leave = count
-    else if (row.status === 'absent') stats.absent = count
+    else if (row.status === 'absent') stats.leave += count
   }
   return stats
 }

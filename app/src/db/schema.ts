@@ -146,7 +146,7 @@ export const TEST_SEED_SQL = [
      (14, date('now','-55 days'),  40, 2000, '续费'),
      (15, date('now','-25 days'),  40, 2000, '首次购课')`,
 
-  // ── 签到记录（10次课，Mon/Wed/Fri，覆盖到课/迟到/请假/旷课）──
+  // ── 签到记录（10次课，Mon/Wed/Fri，含到课/迟到/请假/absent 样本；展示层统一并入请假）──
   // 2026-02-16
   `INSERT OR IGNORE INTO attendances (student_id, date, status, notes, photo_path, created_by) VALUES
      (1, '2026-02-16','present','','',2),(2, '2026-02-16','present','','',2),

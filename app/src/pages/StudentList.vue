@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, Plus } from 'lucide-vue-next'
+import { Search, Plus, Phone } from 'lucide-vue-next'
 import { useStudentStore } from '../stores/student'
 import { useAuthStore } from '../stores/auth'
 import { updateAllLifecycleTags } from '../utils/lifecycle'
@@ -62,6 +62,13 @@ function goToDetail(id: number) {
 function goToAdd() {
   router.push('/students/add')
 }
+
+function hoursTextClass(hours: number): string {
+  const color = studentStore.getStudentColor(hours)
+  if (color === 'danger') return 'text-red-500'
+  if (color === 'warning') return 'text-amber-500'
+  return 'text-emerald-500'
+}
 </script>
 
 <template>
@@ -120,46 +127,56 @@ function goToAdd() {
       <AppCard
         v-for="student in filteredStudents"
         :key="student.id"
-        class="active:scale-[0.98] transition-transform cursor-pointer"
+        class="!p-3 active:scale-[0.985] active:shadow-sm transition-all duration-150 cursor-pointer"
         @click="goToDetail(student.id)"
       >
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3.5">
           <!-- 头像 -->
-          <AppAvatar :name="student.name" />
+          <AppAvatar :name="student.name" size="md" />
 
           <!-- 信息 -->
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-slate-800 truncate">{{ student.name }}</span>
-              <AppBadge :label="student.class_name" variant="info" />
-            </div>
-            <div class="flex items-center gap-2 mt-1">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="font-semibold text-slate-800 truncate">{{ student.name }}</span>
               <AppBadge
-                v-if="activeTab === 'active'"
-                :label="`${student.remaining_hours} 课时`"
-                :variant="studentStore.getStudentColor(student.remaining_hours)"
-              />
-              <AppBadge
-                v-if="activeTab === 'active'"
+                class="shrink-0"
                 :label="lifecycleLabels[student.lifecycle_tag]"
                 :variant="lifecycleVariants[student.lifecycle_tag]"
               />
             </div>
+            <div class="flex items-center gap-1.5 mt-1 min-w-0">
+              <span class="text-xs text-slate-400 truncate">家长：{{ student.parent_name }}</span>
+              <a
+                :href="`tel:${student.parent_phone}`"
+                class="text-xs text-slate-400 truncate hover:text-indigo-500"
+                @click.stop
+              >
+                {{ student.parent_phone }}
+              </a>
+              <a
+                :href="`tel:${student.parent_phone}`"
+                class="w-5 h-5 rounded-md bg-slate-100 text-slate-500 flex items-center justify-center active:scale-95 active:bg-slate-200 shrink-0"
+                aria-label="拨打家长电话"
+                @click.stop
+              >
+                <Phone class="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
           <!-- 剩余课时大字 -->
-          <div v-if="activeTab === 'active'" class="text-right shrink-0">
-            <div
-              :class="[
-                'text-2xl font-bold',
-                studentStore.getStudentColor(student.remaining_hours) === 'danger' ? 'text-red-500' :
-                studentStore.getStudentColor(student.remaining_hours) === 'warning' ? 'text-yellow-500' :
-                'text-green-500',
-              ]"
-            >
-              {{ student.remaining_hours }}
+          <div v-if="activeTab === 'active'" class="shrink-0">
+            <div class="min-w-[3.8rem] rounded-xl border border-slate-100 bg-slate-50 px-2.5 py-1.5 text-center">
+              <div
+                :class="[
+                  'text-2xl font-extrabold leading-none tabular-nums',
+                  hoursTextClass(student.remaining_hours),
+                ]"
+              >
+                {{ student.remaining_hours }}
+              </div>
+              <div class="mt-1 text-[10px] leading-none tracking-wide text-slate-400">课时</div>
             </div>
-            <div class="text-xs text-slate-400">剩余</div>
           </div>
         </div>
       </AppCard>

@@ -23,7 +23,7 @@ const attendanceMap = ref<Map<string, Attendance[]>>(new Map())
 const showDetailModal = ref(false)
 const selectedDate = ref('')
 const selectedDateRecords = ref<{ name: string; status: string }[]>([])
-const selectedDateStats = ref({ total: 0, present: 0, late: 0, leave: 0, absent: 0 })
+const selectedDateStats = ref({ total: 0, present: 0, late: 0, leave: 0 })
 const detailLoading = ref(false)
 
 const weekDays = ['一', '二', '三', '四', '五', '六', '日']
@@ -180,7 +180,7 @@ const statusMap: Record<string, { label: string; variant: 'success' | 'warning' 
   present: { label: '到课', variant: 'success' },
   late: { label: '迟到', variant: 'warning' },
   leave: { label: '请假', variant: 'info' },
-  absent: { label: '旷课', variant: 'danger' },
+  absent: { label: '请假', variant: 'info' },
 }
 
 onMounted(loadData)
@@ -270,7 +270,7 @@ watch([viewMode, currentDate], loadData)
       </div>
       <div v-else>
         <!-- 统计概览 -->
-        <div class="grid grid-cols-4 gap-2 mb-4">
+        <div class="grid grid-cols-3 gap-2 mb-4">
           <div class="text-center">
             <div class="text-lg font-bold text-green-600">{{ selectedDateStats.present }}</div>
             <div class="text-[10px] text-slate-400">到课</div>
@@ -282,10 +282,6 @@ watch([viewMode, currentDate], loadData)
           <div class="text-center">
             <div class="text-lg font-bold text-indigo-500">{{ selectedDateStats.leave }}</div>
             <div class="text-[10px] text-slate-400">请假</div>
-          </div>
-          <div class="text-center">
-            <div class="text-lg font-bold text-red-500">{{ selectedDateStats.absent }}</div>
-            <div class="text-[10px] text-slate-400">旷课</div>
           </div>
         </div>
 

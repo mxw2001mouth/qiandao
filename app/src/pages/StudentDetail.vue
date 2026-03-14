@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Phone, Edit, UserX, ShoppingCart, Download } from 'lucide-vue-next'
+import { Phone, Edit, UserX, ShoppingCart, Download, Image } from 'lucide-vue-next'
 import type { Student, Attendance, LifecycleTag } from '../types'
 import { useStudentStore } from '../stores/student'
 import { useAuthStore } from '../stores/auth'
@@ -31,7 +31,7 @@ const studentId = Number(route.params.id)
 // 当天签到详情弹窗
 const showDayModal = ref(false)
 const dayModalDate = ref('')
-const dayModalStats = ref({ total: 0, present: 0, late: 0, leave: 0, absent: 0 })
+const dayModalStats = ref({ total: 0, present: 0, late: 0, leave: 0 })
 const dayModalRecords = ref<{ name: string; status: string }[]>([])
 const dayModalPhoto = ref<string | null>(null)
 const dayModalLoading = ref(false)
@@ -68,7 +68,7 @@ const statusMap: Record<string, { label: string; variant: 'success' | 'warning' 
   present: { label: '到课', variant: 'success' },
   late: { label: '迟到', variant: 'warning' },
   leave: { label: '请假', variant: 'info' },
-  absent: { label: '旷课', variant: 'danger' },
+  absent: { label: '请假', variant: 'info' },
 }
 
 function goToEdit() {
@@ -268,7 +268,7 @@ async function downloadPhoto() {
       </div>
       <div v-else class="space-y-4">
         <!-- 统计概览 -->
-        <div class="grid grid-cols-4 gap-2 bg-slate-50 rounded-xl p-3">
+        <div class="grid grid-cols-3 gap-2 bg-slate-50 rounded-xl p-3">
           <div class="text-center">
             <div class="text-xl font-bold text-green-600">{{ dayModalStats.present }}</div>
             <div class="text-[10px] text-slate-500">到课</div>
@@ -281,11 +281,18 @@ async function downloadPhoto() {
             <div class="text-xl font-bold text-indigo-500">{{ dayModalStats.leave }}</div>
             <div class="text-[10px] text-slate-500">请假</div>
           </div>
-          <div class="text-center">
-            <div class="text-xl font-bold text-red-500">{{ dayModalStats.absent }}</div>
-            <div class="text-[10px] text-slate-500">旷课</div>
-          </div>
         </div>
+
+        <!-- 查看合影按钮（醒目入口） -->
+        <AppButton
+          class="w-full"
+          :variant="dayModalPhoto ? 'primary' : 'secondary'"
+          :disabled="!dayModalPhoto"
+          @click="showPhotoModal = true"
+        >
+          <Image class="w-4 h-4 mr-1.5" />
+          {{ dayModalPhoto ? '查看签到合影' : '暂无签到合影' }}
+        </AppButton>
 
         <!-- 班级合影 -->
         <div v-if="dayModalPhoto" class="space-y-2">

@@ -9,6 +9,7 @@ import AppCard from '../components/ui/AppCard.vue'
 import AppInput from '../components/ui/AppInput.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppModal from '../components/ui/AppModal.vue'
+import { APP_NAME, APP_VERSION, AUTHOR_NAME, AUTHOR_CONTACT } from '../constants/appMeta'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -137,7 +138,6 @@ function goToBackup() {
         <ChevronRight class="w-4 h-4 text-slate-400" />
       </button>
     </AppCard>
-
     <!-- 数据管理（管理员） -->
     <AppCard v-if="auth.isAdmin">
       <div class="flex items-center gap-2 mb-3">
@@ -169,12 +169,23 @@ function goToBackup() {
     <!-- 关于 -->
     <AppCard>
       <div class="text-center text-xs text-slate-400 space-y-1">
-        <p>签到管理系统 v1.0</p>
-        <p>培训机构学生签到与课时管理</p>
+        <p>
+          <span class="text-indigo-600 font-semibold text-xs">时光微醉</span>
+          <span class="text-slate-400 text-xs">-签到管理系统 v1.0</span>
+        </p>
+        <p>培训机构学生签到与课时管理-Mazh</p>
       </div>
     </AppCard>
 
     <!-- 退出登录 -->
+    <AppCard>
+      <div class="text-center text-xs text-slate-500 space-y-1">
+        <p class="font-semibold text-slate-700">{{ APP_NAME }} {{ APP_VERSION }}</p>
+        <p>作者信息：{{ AUTHOR_NAME }}</p>
+        <p>联系方式：{{ AUTHOR_CONTACT }}</p>
+      </div>
+    </AppCard>
+
     <AppButton variant="secondary" class="w-full" @click="handleLogout">
       <LogOut class="w-4 h-4 mr-2" />
       退出登录

@@ -52,12 +52,12 @@ export async function restoreDatabase(filePath: string): Promise<void> {
 
   const jsonData = JSON.parse(result.data as string)
 
-  // 关闭当前连接
+  // 关闭当前连接（importFromJson 要求连接已关闭）
   await database.close()
 
-  // 重新初始化并导入数据
-  await database.init()
+  // 先导入备份数据，再重新初始化连接
   await database.importJson(JSON.stringify(jsonData))
+  await database.init()
 }
 
 // 获取上次备份时间

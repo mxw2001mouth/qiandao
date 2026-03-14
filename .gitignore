@@ -8,6 +8,7 @@
 app/node_modules/
 app/dist/
 app/dist-ssr/
+app/.vscode/
 
 # ── Capacitor 原生平台目录（由 CI 生成，不上传）──
 app/android/
@@ -16,7 +17,6 @@ Demo/
 
 # ── 本地临时文件 ──
 app/*.local
-app/.env
 app/.env.local
 app/.env.*.local
 app/*.err

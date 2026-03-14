@@ -43,8 +43,8 @@ function renderDistributionChart() {
   const dist = statsStore.statusDistribution
   const option = createBarOption(
     '',
-    ['到课', '迟到', '请假', '旷课'],
-    [dist.present, dist.late, dist.leave, dist.absent],
+    ['到课', '迟到', '请假'],
+    [dist.present, dist.late, dist.leave],
     { horizontal: true, colorList: CHART_COLORS }
   )
   distributionChart.setOption(option, true)
@@ -139,7 +139,6 @@ function getRateColor(rate: number): string {
             <div class="flex gap-3 mt-1 text-[11px] text-slate-400">
               <span>迟到 {{ item.lateCount }}</span>
               <span>请假 {{ item.leaveCount }}</span>
-              <span>旷课 {{ item.absentCount }}</span>
             </div>
           </div>
         </div>
