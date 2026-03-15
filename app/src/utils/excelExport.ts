@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx'
 import { Filesystem, Directory } from '@capacitor/filesystem'
+import { Capacitor } from '@capacitor/core'
 import dayjs from 'dayjs'
 import * as studentRepo from '../db/repositories/studentRepository'
 import * as attendanceRepo from '../db/repositories/attendanceRepository'
@@ -30,9 +31,26 @@ async function ensureDir(): Promise<void> {
 
 // 将 workbook 保存到文件
 async function saveWorkbook(wb: XLSX.WorkBook, fileName: string): Promise<string> {
+  const data = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' })
+
+  if (!Capacitor.isNativePlatform()) {
+    // 浏览器：触发下载
+    const binary = atob(data)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+    const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    a.click()
+    URL.revokeObjectURL(url)
+    return `下载：${fileName}`
+  }
+
+  // Android 原生：写入 Documents 目录
   await ensureDir()
   const filePath = `${EXPORT_DIR}/${fileName}`
-  const data = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' })
   await Filesystem.writeFile({
     path: filePath,
     data,

@@ -39,8 +39,8 @@ watch(() => props.visible, (val) => {
           <div v-if="props.title" class="px-5 pb-3">
             <h3 class="text-lg font-bold text-slate-800">{{ props.title }}</h3>
           </div>
-          <!-- 内容 -->
-          <div class="px-5 pb-6 overflow-y-auto flex-1">
+          <!-- 内容（pb 含底部安全区，防手势导航栏遮挡） -->
+          <div class="px-5 overflow-y-auto flex-1" style="padding-bottom: max(24px, env(safe-area-inset-bottom))">
             <slot />
           </div>
         </div>

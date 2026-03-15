@@ -272,7 +272,6 @@ onMounted(async () => {
         <div class="absolute bottom-0 left-0 right-0 px-3 py-2 flex items-end justify-between">
           <div>
             <p class="text-white text-sm font-semibold leading-tight">今日合影</p>
-            <p class="text-white/70 text-xs">含日期水印，点击全屏查看</p>
           </div>
           <span class="bg-white/20 text-white text-xs px-2 py-1 rounded-lg backdrop-blur-sm">全屏</span>
         </div>

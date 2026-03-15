@@ -81,8 +81,8 @@ function onTouchEnd(e: TouchEvent) {
         class="fixed inset-0 z-[60] bg-black flex flex-col"
         @click.self="close"
       >
-        <!-- 顶栏 -->
-        <div class="flex items-center justify-between px-4 py-3 flex-shrink-0">
+        <!-- 顶栏（padding-top 包含状态栏安全区） -->
+        <div class="flex items-center justify-between px-4 py-3 flex-shrink-0" style="padding-top: max(12px, env(safe-area-inset-top))">
           <span class="text-white/80 text-sm font-medium">{{ title || '照片' }}</span>
           <button
             class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"

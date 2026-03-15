@@ -19,6 +19,7 @@ const selectedMonth = ref(dayjs().format('YYYY-MM'))
 const isExporting = ref(false)
 const showResultModal = ref(false)
 const resultPath = ref('')
+const exportError = ref('')
 
 onMounted(async () => {
   await studentStore.fetchStudents()
@@ -29,6 +30,7 @@ onMounted(async () => {
 
 async function handleExport() {
   isExporting.value = true
+  exportError.value = ''
   try {
     if (exportType.value === 'student') {
       if (!selectedStudentId.value) return
@@ -38,6 +40,7 @@ async function handleExport() {
     }
     showResultModal.value = true
   } catch (e) {
+    exportError.value = e instanceof Error ? e.message : '导出失败，请重试'
     console.error('导出失败:', e)
   } finally {
     isExporting.value = false
@@ -97,6 +100,11 @@ async function handleExport() {
         />
         <p class="text-xs text-slate-400 mt-2">导出所有学生当月出勤汇总表</p>
       </AppCard>
+
+      <!-- 错误提示 -->
+      <div v-if="exportError" class="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+        <span class="text-red-500 text-sm">{{ exportError }}</span>
+      </div>
 
       <!-- 导出按钮 -->
       <AppButton

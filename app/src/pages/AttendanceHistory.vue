@@ -245,7 +245,6 @@ onMounted(() => {
           <img :src="photoUrl" class="w-full object-cover max-h-52" alt="当日合影" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
           <div class="absolute bottom-0 left-0 right-0 px-3 py-2">
-            <p class="text-white text-xs">含日期水印 · 点击全屏查看</p>
           </div>
         </div>
 
