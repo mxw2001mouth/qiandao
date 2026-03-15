@@ -1,0 +1,128 @@
+# ============================================================
+# Codemagic 自动构建配置文件 · 注释说明版
+# ============================================================
+# 使用方法：
+#   把本文件改名为 codemagic.yaml 上传到仓库根目录，
+#   登录 https://codemagic.io 连接 GitHub 仓库后即可触发构建。
+#
+# 可以人工替换的地方已标注 【可改】
+# 不建议随意动的地方已标注 【勿动】
+# ============================================================
+
+workflows:
+
+  # ──────────────────────────────────────────────────────────
+  # 【可改】工作流 ID，整个文件里唯一即可，英文小写+连字符
+  #   如有多个构建方案（debug/release/不同渠道），复制整个块改个名字
+  # ──────────────────────────────────────────────────────────
+  android-debug:
+
+    # 【可改】显示在 Codemagic 网页界面的构建任务名称，中文也可以
+    name: 签到管理
+
+    # 【可改】单次构建的最大时长（分钟），超时自动失败
+    #   免费套餐每月 500 分钟，本项目通常 8~12 分钟跑完，30 分钟足够
+    max_build_duration: 30
+
+    environment:
+      # 【可改】Node.js 版本，需与本地开发版本一致
+      #   查看本地版本：node -v
+      #   Codemagic 支持的版本列表：https://docs.codemagic.io/specs/versions/
+      node: 22.15.0
+
+      # 【勿动】Java 版本，Capacitor 8.x 强制要求 Java 21
+      #   改成 17 会报 "invalid source release: 21"
+      java: 21
+
+    scripts:
+      # ──────────────────────────────────────────────────────
+      # 每个 step 都是一个 name + script 对，按顺序执行
+      # 任意一步失败则整个构建标记失败，后续步骤不再执行
+      # ──────────────────────────────────────────────────────
+
+      - name: 安装 npm 依赖
+        script: |
+          cd app          # 【可改】如果你的 Vue 项目在根目录而不是 app/ 子目录，去掉这行
+          npm ci          # 【勿动】npm ci 比 npm install 更严格，保证和 package-lock.json 一致
+
+      - name: 构建 Web 资源
+        script: |
+          cd app
+          npm run build   # 【勿动】对应 package.json 里的 build 脚本，输出到 app/dist/
+
+      - name: 添加 Capacitor Android 平台
+        script: |
+          cd app
+          npx cap add android
+          # 【说明】在 CI 机器上首次克隆仓库时，android/ 目录不存在（已加入 .gitignore）
+          #         所以每次构建都要重新生成。如果你把 android/ 提交进了 git，删掉这步
+
+      - name: 同步 Web 资源到 Android
+        script: |
+          cd app
+          npx cap sync android
+          # 【说明】把 dist/ 里的前端资源复制进 android/ 的 WebView 目录
+          #         同时把 capacitor.config.ts 里的配置写入原生工程
+
+      - name: 构建 APK
+        script: |
+          cd app/android
+          chmod +x gradlew           # 【勿动】Linux/Mac CI 环境需要手动给执行权限
+          ./gradlew assembleDebug \
+            --no-daemon              # 【勿动】禁用 Gradle Daemon，节省 CI 内存
+          # ── 其他常用 Gradle 参数 ──────────────────────────────
+          # --stacktrace             加这个可以看完整报错堆栈，排查构建失败时用
+          # assembleRelease          【可改】改成 Release 包（需要配置签名，见下方注释）
+          # ─────────────────────────────────────────────────────
+
+    # ──────────────────────────────────────────────────────────
+    # 构建产物：Codemagic 会把这些文件打包成下载链接发到邮箱
+    # ──────────────────────────────────────────────────────────
+    artifacts:
+      # 【勿动】Debug APK 的固定输出路径，Gradle 约定俗成
+      - app/android/app/build/outputs/apk/debug/app-debug.apk
+
+      # 【可改】如果你改成 assembleRelease，路径改成：
+      # - app/android/app/build/outputs/apk/release/app-release.apk
+
+      # 【可改】同时保留 mapping 文件（混淆符号表，用于崩溃分析）：
+      # - app/android/app/build/outputs/mapping/release/mapping.txt
+
+    publishing:
+      email:
+        recipients:
+          # 【必改】替换成你自己的邮箱，构建成功/失败都会收到通知
+          # 可以写多个邮箱，每行一个 - 开头
+          - your@email.com
+          # - another@email.com
+
+        notify:
+          success: true   # 【可改】构建成功时发邮件，改成 false 则只失败时发
+          failure: true   # 【可改】构建失败时发邮件，建议保持 true
+
+# ============================================================
+# 进阶：Release 签名包配置（暂时用不到，留作参考）
+# ============================================================
+# 要打 Release APK 并签名，需要在 environment 块里加：
+#
+#   android_signing:
+#     - my_keystore            # Codemagic 后台上传 keystore 后的别名
+#
+# 然后在 Gradle 命令里改成 assembleRelease
+# 详细教程：https://docs.codemagic.io/yaml-code-signing/android/
+#
+# ============================================================
+# 进阶：只在推送到特定分支时触发构建
+# ============================================================
+# 在 workflow 块的顶层加：
+#
+#   triggering:
+#     events:
+#       - push
+#     branch_patterns:
+#       - pattern: main          # 只有 push 到 main 分支才构建
+#         include: true
+#       - pattern: dev/*         # dev/ 开头的分支也构建
+#         include: true
+#
+# ============================================================

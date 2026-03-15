@@ -1,44 +1,51 @@
 workflows:
+
+  # 工作流 ID（网页界面也用这个名字区分不同构建任务）
   android-debug:
-    名字: 签到管理
+    name: 签到管理
+
+    # 单次构建超时时间（分钟），本项目约 8~12 分钟，30 分钟足够
     max_build_duration: 30
+
     environment:
-      node: 22.15.0
-      java: 21
+      node: 22.15.0   # 【可改】与本地 node -v 保持一致
+      java: 21        # 【勿动】Capacitor 8.x 强制 Java 21
+
     scripts:
-      - 名字: 安装 npm 依赖
+      - name: 安装 npm 依赖
         script: |
           cd app
-          npm ci
+          npm ci                        # 严格按 package-lock.json 安装，保证可复现
 
-      - 名字: 构建 Web 资源
+      - name: 构建 Web 资源
         script: |
           cd app
-          npm run build
+          npm run build                 # 输出到 app/dist/
 
-      - 名字: 添加 Capacitor Android 平台
+      - name: 添加 Capacitor Android 平台
         script: |
           cd app
-          npx cap add android
+          npx cap add android           # CI 每次从零开始，android/ 不入 git 所以要重建
 
-      - 名字: 同步 Web 资源到 Android
+      - name: 同步 Web 资源到 Android
         script: |
           cd app
-          npx cap sync android
+          npx cap sync android          # 把 dist/ 复制进原生工程的 WebView 目录
 
-      - 名字: 构建 APK
+      - name: 构建 APK
         script: |
           cd app/android
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          chmod +x gradlew              # Linux CI 需要手动赋执行权限
+          ./gradlew assembleDebug --no-daemon   # --no-daemon 节省 CI 内存
 
+    # 构建产物：成功后打包成下载链接发到邮箱
     artifacts:
       - app/android/app/build/outputs/apk/debug/app-debug.apk
 
     publishing:
-      电子邮箱:
+      email:
         recipients:
-          -231589322@qq.com        # ← 改成你的邮箱，构建完成后发送下载链接
+          - 231589322@qq.com            # 【可改】替换成自己的邮箱
         notify:
           success: true
           failure: true
