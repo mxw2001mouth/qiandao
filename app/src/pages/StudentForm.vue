@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStudentStore } from '../stores/student'
 import { getStudentById } from '../db/repositories/studentRepository'
 import { createPurchase } from '../db/repositories/purchaseRepository'
+import { getClassCatalog } from '../db/repositories/settingsRepository'
 import AppInput from '../components/ui/AppInput.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppCard from '../components/ui/AppCard.vue'
@@ -30,13 +31,32 @@ const form = ref({
 const errors = ref<Record<string, string>>({})
 const loading = ref(false)
 const submitting = ref(false)
+const classOptions = ref<string[]>([])
+
+function sortClasses(classes: string[]): string[] {
+  return [...classes].sort((a, b) => a.localeCompare(b, 'zh-CN'))
+}
+
+function includeClassOptionIfMissing(className: string) {
+  const normalized = className.trim()
+  if (!normalized) return
+  if (classOptions.value.includes(normalized)) return
+  classOptions.value = sortClasses([...classOptions.value, normalized])
+}
 
 onMounted(async () => {
+  try {
+    classOptions.value = await getClassCatalog()
+  } catch {
+    classOptions.value = []
+  }
+
   if (isEdit.value) {
     loading.value = true
     try {
       const student = await getStudentById(studentId.value)
       if (student) {
+        includeClassOptionIfMissing(student.class_name)
         form.value.name = student.name
         form.value.class_name = student.class_name
         form.value.parent_name = student.parent_name
@@ -47,6 +67,8 @@ onMounted(async () => {
     } finally {
       loading.value = false
     }
+  } else if (classOptions.value.length > 0) {
+    form.value.class_name = classOptions.value[0]!
   }
 })
 
@@ -57,7 +79,7 @@ function validate(): boolean {
     errors.value.name = '请输入学生姓名'
   }
   if (!form.value.class_name.trim()) {
-    errors.value.class_name = '请输入班级'
+    errors.value.class_name = '请选择班级'
   }
   if (!form.value.parent_name.trim()) {
     errors.value.parent_name = '请输入家长姓名'
@@ -138,12 +160,23 @@ async function handleSubmit() {
             placeholder="请输入姓名"
             :error="errors.name"
           />
-          <AppInput
-            v-model="form.class_name"
-            label="班级"
-            placeholder="请输入班级名称"
-            :error="errors.class_name"
-          />
+          <div class="w-full">
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">班级</label>
+            <select
+              v-model="form.class_name"
+              class="w-full border rounded-xl px-4 py-3 text-slate-800 bg-white transition-all duration-200 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+              :class="errors.class_name ? 'border-red-400 focus:border-red-400 focus:ring-red-100' : 'border-slate-200'"
+            >
+              <option v-if="classOptions.length === 0" value="">暂无可选班级</option>
+              <option v-for="className in classOptions" :key="className" :value="className">
+                {{ className }}
+              </option>
+            </select>
+            <p v-if="classOptions.length === 0" class="mt-1 text-xs text-amber-600">
+              请先在设置页的班级管理中新增班级
+            </p>
+            <p v-if="errors.class_name" class="mt-1 text-xs text-red-500">{{ errors.class_name }}</p>
+          </div>
           <AppInput
             v-model="form.parent_name"
             label="家长姓名"

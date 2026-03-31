@@ -16,6 +16,34 @@ const statusLabels: Record<AttendanceStatus, string> = {
   absent: '请假',
 }
 
+function sanitizeFileName(fileName: string): string {
+  return fileName.replace(/[\\/:*?"<>|]/g, '_').trim()
+}
+
+function normalizeYearMonth(yearMonth: string): string {
+  const match = yearMonth.trim().match(/(\d{4})\D*(\d{1,2})/)
+  if (!match) {
+    throw new Error('月份格式无效，请重新选择月份')
+  }
+  const year = Number(match[1])
+  const month = Number(match[2])
+  if (!year || month < 1 || month > 12) {
+    throw new Error('月份格式无效，请重新选择月份')
+  }
+  return `${year}-${String(month).padStart(2, '0')}`
+}
+
+async function ensureExportPermission(): Promise<void> {
+  if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'android') return
+  const checked = await Filesystem.checkPermissions()
+  if (checked.publicStorage === 'granted') return
+
+  const requested = await Filesystem.requestPermissions()
+  if (requested.publicStorage !== 'granted') {
+    throw new Error('导出失败：未授予存储权限，请在系统设置中允许存储权限后重试')
+  }
+}
+
 // 确保导出目录存在
 async function ensureDir(): Promise<void> {
   try {
@@ -32,6 +60,7 @@ async function ensureDir(): Promise<void> {
 // 将 workbook 保存到文件
 async function saveWorkbook(wb: XLSX.WorkBook, fileName: string): Promise<string> {
   const data = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' })
+  const safeFileName = sanitizeFileName(fileName)
 
   if (!Capacitor.isNativePlatform()) {
     // 浏览器：触发下载
@@ -42,15 +71,16 @@ async function saveWorkbook(wb: XLSX.WorkBook, fileName: string): Promise<string
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = fileName
+    a.download = safeFileName
     a.click()
     URL.revokeObjectURL(url)
-    return `下载：${fileName}`
+    return `下载：${safeFileName}`
   }
 
   // Android 原生：写入 Documents 目录
+  await ensureExportPermission()
   await ensureDir()
-  const filePath = `${EXPORT_DIR}/${fileName}`
+  const filePath = `${EXPORT_DIR}/${safeFileName}`
   await Filesystem.writeFile({
     path: filePath,
     data,
@@ -90,14 +120,15 @@ export async function exportByStudent(studentId: number): Promise<string> {
   XLSX.utils.book_append_sheet(wb, ws2, '购课记录')
 
   // 保存
-  const fileName = `${student.name}_${dayjs().format('YYYYMMDD')}.xlsx`
+  const fileName = `${student.name}_${dayjs().format('YYYYMMDD_HHmmss')}.xlsx`
   return saveWorkbook(wb, fileName)
 }
 
 // 按月导出：所有学生当月出勤汇总
 export async function exportByMonth(yearMonth: string): Promise<string> {
+  const month = normalizeYearMonth(yearMonth)
   // yearMonth 格式：YYYY-MM
-  const startDate = `${yearMonth}-01`
+  const startDate = `${month}-01`
   const endDate = dayjs(startDate).endOf('month').format('YYYY-MM-DD')
   const daysInMonth = dayjs(startDate).daysInMonth()
 
@@ -125,7 +156,7 @@ export async function exportByMonth(yearMonth: string): Promise<string> {
     let totalCount = 0
 
     for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${yearMonth}-${String(d).padStart(2, '0')}`
+      const dateStr = `${month}-${String(d).padStart(2, '0')}`
       const status = dateMap?.get(dateStr) || ''
       row[`${d}日`] = status
       if (status) {
@@ -142,8 +173,8 @@ export async function exportByMonth(yearMonth: string): Promise<string> {
 
   const wb = XLSX.utils.book_new()
   const ws = XLSX.utils.json_to_sheet(rows.length > 0 ? rows : [{ '姓名': '暂无数据' }])
-  XLSX.utils.book_append_sheet(wb, ws, `${yearMonth}出勤汇总`)
+  XLSX.utils.book_append_sheet(wb, ws, `${month}出勤汇总`)
 
-  const fileName = `出勤汇总_${yearMonth}.xlsx`
+  const fileName = `出勤汇总_${month}_${dayjs().format('YYYYMMDD_HHmmss')}.xlsx`
   return saveWorkbook(wb, fileName)
 }

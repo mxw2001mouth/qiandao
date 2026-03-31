@@ -123,10 +123,29 @@ export async function getStudentsByClass(className: string): Promise<Student[]> 
 // 获取所有班级名称
 export async function getAllClasses(): Promise<string[]> {
   const rows = await database.query<{ class_name: string }>(
-    'SELECT DISTINCT class_name FROM students WHERE status = ? ORDER BY class_name',
-    ['active']
+    `SELECT DISTINCT class_name
+     FROM students
+     WHERE TRIM(class_name) <> ''
+     ORDER BY class_name`
   )
   return rows.map(r => r.class_name)
+}
+
+// 获取某班级关联学生数（含在读与归档）
+export async function getStudentCountByClass(className: string): Promise<number> {
+  const rows = await database.query<{ count: number }>(
+    'SELECT COUNT(*) as count FROM students WHERE class_name = ?',
+    [className]
+  )
+  return rows[0]?.count ?? 0
+}
+
+// 批量重命名学生班级（含在读与归档）
+export async function renameStudentClass(oldClassName: string, newClassName: string): Promise<void> {
+  await database.run(
+    'UPDATE students SET class_name = ? WHERE class_name = ?',
+    [newClassName, oldClassName]
+  )
 }
 
 // 获取学生总数（在读）
