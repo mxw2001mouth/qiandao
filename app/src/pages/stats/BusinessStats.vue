@@ -116,7 +116,7 @@ function getDepletionColor(date: string): string {
             <div class="text-xs font-medium" :class="getDepletionColor(item.depletionDate)">
               {{ item.depletionDate }}
             </div>
-            <div class="text-[10px] text-slate-400">预计耗尽</div>
+            <div class="text-xs text-slate-400">预计耗尽</div>
           </div>
         </div>
       </div>

@@ -136,7 +136,7 @@ function getRateColor(rate: number): string {
                 :style="{ width: `${item.attendanceRate}%` }"
               />
             </div>
-            <div class="flex gap-3 mt-1 text-[11px] text-slate-400">
+            <div class="flex gap-3 mt-1 text-xs text-slate-400">
               <span>迟到 {{ item.lateCount }}</span>
               <span>请假 {{ item.leaveCount }}</span>
             </div>

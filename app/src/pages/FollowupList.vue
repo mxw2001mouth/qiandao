@@ -93,7 +93,7 @@ function goToDetail(studentId: number) {
     <div class="flex bg-slate-100 rounded-xl p-1">
       <button
         :class="[
-          'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5',
+          'flex-1 h-11 text-sm font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5',
           activeFilter === 'pending'
             ? 'bg-white text-red-600 shadow-sm'
             : 'text-slate-500',
@@ -109,7 +109,7 @@ function goToDetail(studentId: number) {
       </button>
       <button
         :class="[
-          'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5',
+          'flex-1 h-11 text-sm font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5',
           activeFilter === 'contacted'
             ? 'bg-white text-indigo-600 shadow-sm'
             : 'text-slate-500',

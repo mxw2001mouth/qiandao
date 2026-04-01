@@ -234,7 +234,7 @@ async function downloadPhoto() {
           <div
             v-for="record in recentAttendances"
             :key="record.id"
-            class="flex items-center justify-between py-2 px-2 border-b border-slate-50 last:border-0 rounded-lg active:bg-slate-50 cursor-pointer"
+            class="flex items-center justify-between py-2 px-2 border-b border-slate-50 last:border-0 rounded-xl active:bg-slate-50 cursor-pointer"
             @click="onDateClick(record)"
           >
             <span class="text-sm text-slate-600">{{ record.date }}</span>
@@ -272,15 +272,15 @@ async function downloadPhoto() {
         <div class="grid grid-cols-3 gap-2 bg-slate-50 rounded-xl p-3">
           <div class="text-center">
             <div class="text-xl font-bold text-green-600">{{ dayModalStats.present }}</div>
-            <div class="text-[10px] text-slate-500">到课</div>
+            <div class="text-xs text-slate-500">到课</div>
           </div>
           <div class="text-center">
             <div class="text-xl font-bold text-yellow-500">{{ dayModalStats.late }}</div>
-            <div class="text-[10px] text-slate-500">迟到</div>
+            <div class="text-xs text-slate-500">迟到</div>
           </div>
           <div class="text-center">
             <div class="text-xl font-bold text-indigo-500">{{ dayModalStats.leave }}</div>
-            <div class="text-[10px] text-slate-500">请假</div>
+            <div class="text-xs text-slate-500">请假</div>
           </div>
         </div>
 
@@ -295,7 +295,7 @@ async function downloadPhoto() {
               @click="showPhotoModal = true"
             />
             <button
-              class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2.5 py-1.5 rounded-lg flex items-center gap-1 active:bg-black/70"
+              class="absolute bottom-2 right-2 h-10 px-3 bg-black/50 text-white text-xs rounded-xl flex items-center gap-1 active:bg-black/70"
               @click.stop="downloadPhoto"
             >
               <Download class="w-3.5 h-3.5" />

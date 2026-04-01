@@ -121,7 +121,7 @@ function formatBackupName(path: string): string {
                 <p class="text-xs text-slate-400">{{ backup }}</p>
               </div>
               <button
-                class="px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-medium active:bg-indigo-100"
+                class="h-11 px-4 rounded-xl bg-indigo-50 text-indigo-600 text-sm font-medium active:bg-indigo-100 inline-flex items-center"
                 :disabled="isRestoring"
                 @click="confirmRestore(backup)"
               >

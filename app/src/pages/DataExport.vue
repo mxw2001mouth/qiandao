@@ -58,7 +58,7 @@ async function handleExport() {
         <h3 class="text-sm font-medium text-slate-700 mb-3">导出类型</h3>
         <div class="grid grid-cols-2 gap-2">
           <button
-            class="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all"
+            class="h-11 flex items-center gap-2 px-4 rounded-xl text-sm font-medium transition-all"
             :class="exportType === 'student' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600'"
             @click="exportType = 'student'"
           >
@@ -66,7 +66,7 @@ async function handleExport() {
             按学生导出
           </button>
           <button
-            class="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all"
+            class="h-11 flex items-center gap-2 px-4 rounded-xl text-sm font-medium transition-all"
             :class="exportType === 'month' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600'"
             @click="exportType = 'month'"
           >
@@ -81,7 +81,7 @@ async function handleExport() {
         <h3 class="text-sm font-medium text-slate-700 mb-3">选择学生</h3>
         <select
           v-model="selectedStudentId"
-          class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+          class="w-full h-11 border border-slate-200 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
         >
           <option v-for="s in studentStore.activeStudents" :key="s.id" :value="s.id">
             {{ s.name }}（{{ s.class_name }}）
@@ -96,7 +96,7 @@ async function handleExport() {
         <input
           v-model="selectedMonth"
           type="month"
-          class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+          class="w-full h-11 border border-slate-200 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
         />
         <p class="text-xs text-slate-400 mt-2">导出所有学生当月出勤汇总表</p>
       </AppCard>

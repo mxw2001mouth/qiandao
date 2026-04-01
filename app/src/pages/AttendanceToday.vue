@@ -258,14 +258,14 @@ onMounted(async () => {
       <template #actions>
         <div class="flex items-center gap-2">
           <button
-            class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 active:bg-slate-200"
+            class="h-11 inline-flex items-center gap-1 px-3 rounded-xl text-xs font-medium bg-slate-100 text-slate-600 active:bg-slate-200"
             @click="router.push('/attendance/history')"
           >
             <History class="w-3.5 h-3.5" />
             历史
           </button>
           <button
-            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium"
+            class="h-11 inline-flex items-center gap-1.5 px-3 rounded-xl text-sm font-medium"
             :class="attendanceStore.groupPhoto
               ? 'bg-green-100 text-green-700'
               : 'bg-indigo-50 text-indigo-600'"
@@ -300,7 +300,7 @@ onMounted(async () => {
             v-if="classSelectOptions.length > 0"
             v-model="selectedClass"
             :disabled="alreadySubmitted"
-            class="min-w-[10rem] border border-slate-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-100 disabled:text-slate-400"
+            class="min-w-[10rem] h-11 border border-slate-200 rounded-xl px-4 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-100 disabled:text-slate-400"
           >
             <option v-for="item in classSelectOptions" :key="item.value" :value="item.value">
               {{ item.label }}

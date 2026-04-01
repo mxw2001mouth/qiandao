@@ -36,7 +36,7 @@ const isCurrentMonth = () => currentMonth.value.isSame(dayjs(), 'month')
       <!-- Tab 切换 -->
       <div class="flex bg-white rounded-xl p-1 shadow-sm">
         <button
-          class="flex-1 py-2 text-sm font-medium rounded-lg transition-colors"
+          class="flex-1 h-11 text-sm font-medium rounded-xl transition-colors"
           :class="activeTab === 'attendance'
             ? 'bg-indigo-500 text-white shadow-sm'
             : 'text-slate-500 hover:text-slate-700'"
@@ -46,7 +46,7 @@ const isCurrentMonth = () => currentMonth.value.isSame(dayjs(), 'month')
         </button>
         <button
           v-if="auth.isAdmin"
-          class="flex-1 py-2 text-sm font-medium rounded-lg transition-colors"
+          class="flex-1 h-11 text-sm font-medium rounded-xl transition-colors"
           :class="activeTab === 'business'
             ? 'bg-indigo-500 text-white shadow-sm'
             : 'text-slate-500 hover:text-slate-700'"

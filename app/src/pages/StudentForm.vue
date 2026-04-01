@@ -164,7 +164,7 @@ async function handleSubmit() {
             <label class="block text-sm font-medium text-slate-700 mb-1.5">班级</label>
             <select
               v-model="form.class_name"
-              class="w-full border rounded-xl px-4 py-3 text-slate-800 bg-white transition-all duration-200 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+              class="w-full h-11 border rounded-xl px-4 text-sm text-slate-800 bg-white transition-all duration-200 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
               :class="errors.class_name ? 'border-red-400 focus:border-red-400 focus:ring-red-100' : 'border-slate-200'"
             >
               <option v-if="classOptions.length === 0" value="">暂无可选班级</option>

@@ -57,12 +57,12 @@ function navigateTo(index: number) {
             activeIndex === index ? 'text-indigo-500' : 'text-slate-400',
           ]"
         />
-        <span
-          :class="[
-            'text-[10px] mt-1 font-medium transition-colors duration-200',
-            activeIndex === index ? 'text-indigo-500' : 'text-slate-400',
-          ]"
-        >
+          <span
+            :class="[
+              'text-xs mt-1 font-medium transition-colors duration-200',
+              activeIndex === index ? 'text-indigo-500' : 'text-slate-400',
+            ]"
+          >
           {{ tab.name }}
         </span>
         <!-- 激活指示条 -->

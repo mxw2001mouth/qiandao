@@ -193,14 +193,14 @@ onMounted(() => {
         </div>
 
         <div class="grid grid-cols-7 mb-1">
-          <div v-for="d in weekDays" :key="d" class="text-center text-[11px] text-slate-400 py-1">{{ d }}</div>
+          <div v-for="d in weekDays" :key="d" class="text-center text-xs text-slate-400 py-1">{{ d }}</div>
         </div>
 
         <div class="grid grid-cols-7 gap-1">
           <button
             v-for="d in monthDays"
             :key="dayKey(d)"
-            class="relative rounded-lg min-h-[40px] flex items-center justify-center transition-colors"
+            class="relative rounded-xl min-h-[44px] flex items-center justify-center transition-colors"
             :class="[
               isSelectedDate(d) ? 'bg-indigo-500 text-white' : 'active:bg-slate-100',
               isCurrentMonth(d) ? '' : 'text-slate-300',
@@ -221,7 +221,7 @@ onMounted(() => {
         <button
           v-for="item in availableDates"
           :key="item.date"
-          class="shrink-0 px-3 py-1.5 rounded-lg text-xs border transition-colors"
+          class="shrink-0 h-10 px-3 rounded-xl text-xs border transition-colors"
           :class="selectedDate === item.date
             ? 'bg-indigo-500 text-white border-indigo-500'
             : 'bg-white text-slate-600 border-slate-200 active:bg-slate-50'"

@@ -87,7 +87,7 @@ function hoursTextClass(hours: number): string {
     <div class="flex bg-slate-100 rounded-xl p-1">
       <button
         :class="[
-          'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+          'flex-1 h-11 text-sm font-medium rounded-xl transition-all duration-200',
           activeTab === 'active'
             ? 'bg-white text-indigo-600 shadow-sm'
             : 'text-slate-500',
@@ -98,7 +98,7 @@ function hoursTextClass(hours: number): string {
       </button>
       <button
         :class="[
-          'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+          'flex-1 h-11 text-sm font-medium rounded-xl transition-all duration-200',
           activeTab === 'archived'
             ? 'bg-white text-indigo-600 shadow-sm'
             : 'text-slate-500',
@@ -155,7 +155,7 @@ function hoursTextClass(hours: number): string {
               </a>
               <a
                 :href="`tel:${student.parent_phone}`"
-                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center active:scale-95 active:bg-slate-200 shrink-0"
+                class="w-11 h-11 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center active:scale-95 active:bg-slate-200 shrink-0"
                 aria-label="拨打家长电话"
                 @click.stop
               >
@@ -175,7 +175,7 @@ function hoursTextClass(hours: number): string {
               >
                 {{ student.remaining_hours }}
               </div>
-              <div class="mt-1 text-[10px] leading-none tracking-wide text-slate-400">课时</div>
+              <div class="mt-1 text-xs leading-none tracking-wide text-slate-400">课时</div>
             </div>
           </div>
         </div>

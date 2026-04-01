@@ -193,7 +193,7 @@ watch([viewMode, currentDate], loadData)
     <div class="flex bg-slate-100 rounded-xl p-1">
       <button
         :class="[
-          'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+          'flex-1 h-11 text-sm font-medium rounded-xl transition-all duration-200',
           viewMode === 'week' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500',
         ]"
         @click="viewMode = 'week'"
@@ -202,7 +202,7 @@ watch([viewMode, currentDate], loadData)
       </button>
       <button
         :class="[
-          'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+          'flex-1 h-11 text-sm font-medium rounded-xl transition-all duration-200',
           viewMode === 'month' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500',
         ]"
         @click="viewMode = 'month'"
@@ -261,7 +261,7 @@ watch([viewMode, currentDate], loadData)
           <span
             v-if="getDayCount(day) > 0"
             :class="[
-              'text-[10px] font-bold mt-0.5 w-6 h-6 rounded-full flex items-center justify-center',
+              'text-xs font-bold mt-0.5 w-6 h-6 rounded-full flex items-center justify-center',
               getDayColor(day),
             ]"
           >
@@ -281,15 +281,15 @@ watch([viewMode, currentDate], loadData)
         <div class="grid grid-cols-3 gap-2 mb-4">
           <div class="text-center">
             <div class="text-lg font-bold text-green-600">{{ selectedDateStats.present }}</div>
-            <div class="text-[10px] text-slate-400">到课</div>
+            <div class="text-xs text-slate-400">到课</div>
           </div>
           <div class="text-center">
             <div class="text-lg font-bold text-yellow-500">{{ selectedDateStats.late }}</div>
-            <div class="text-[10px] text-slate-400">迟到</div>
+            <div class="text-xs text-slate-400">迟到</div>
           </div>
           <div class="text-center">
             <div class="text-lg font-bold text-indigo-500">{{ selectedDateStats.leave }}</div>
-            <div class="text-[10px] text-slate-400">请假</div>
+            <div class="text-xs text-slate-400">请假</div>
           </div>
         </div>
 
