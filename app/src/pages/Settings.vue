@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { LogOut, Shield, Bell, Database, FileText, ChevronRight, Plus, Trash2, PencilLine } from 'lucide-vue-next'
+import { LogOut, Shield, Bell, Database, FileText, ChevronRight, Trash2, PencilLine } from 'lucide-vue-next'
 import { useAuthStore } from '../stores/auth'
 import {
   getWarningThreshold,
@@ -363,7 +363,7 @@ function goToBackup() {
       </div>
 
       <div class="space-y-3">
-        <div class="flex gap-2">
+        <div class="flex items-end gap-2">
           <AppInput
             v-model="newClassName"
             label="新增班级"
@@ -371,7 +371,6 @@ function goToBackup() {
             class="flex-1"
           />
           <AppButton size="sm" :loading="classSaving" @click="addClassItem">
-            <Plus class="w-4 h-4 mr-1" />
             新增
           </AppButton>
         </div>
