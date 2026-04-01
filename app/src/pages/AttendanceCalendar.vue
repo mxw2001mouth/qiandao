@@ -213,13 +213,21 @@ watch([viewMode, currentDate], loadData)
 
     <!-- 日期导航 -->
     <div class="flex items-center justify-between">
-      <button class="w-8 h-8 flex items-center justify-center rounded-lg active:bg-slate-100" @click="navigatePrev">
+      <button
+        class="w-11 h-11 flex items-center justify-center rounded-xl active:bg-slate-100"
+        aria-label="上一周期"
+        @click="navigatePrev"
+      >
         <ChevronLeft class="w-5 h-5 text-slate-600" />
       </button>
       <button class="text-sm font-bold text-slate-800" @click="goToToday">
         {{ headerTitle }}
       </button>
-      <button class="w-8 h-8 flex items-center justify-center rounded-lg active:bg-slate-100" @click="navigateNext">
+      <button
+        class="w-11 h-11 flex items-center justify-center rounded-xl active:bg-slate-100"
+        aria-label="下一周期"
+        @click="navigateNext"
+      >
         <ChevronRight class="w-5 h-5 text-slate-600" />
       </button>
     </div>

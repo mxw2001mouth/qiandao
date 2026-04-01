@@ -175,11 +175,19 @@ onMounted(() => {
     <div class="px-4 py-3">
       <AppCard class="!p-3">
         <div class="flex items-center justify-between mb-2">
-          <button class="w-8 h-8 rounded-lg active:bg-slate-100 flex items-center justify-center" @click="prevMonth">
+          <button
+            class="w-11 h-11 rounded-xl active:bg-slate-100 flex items-center justify-center"
+            aria-label="查看上个月"
+            @click="prevMonth"
+          >
             <ChevronLeft class="w-4 h-4 text-slate-600" />
           </button>
           <div class="text-sm font-semibold text-slate-700">{{ monthLabel }}</div>
-          <button class="w-8 h-8 rounded-lg active:bg-slate-100 flex items-center justify-center" @click="nextMonth">
+          <button
+            class="w-11 h-11 rounded-xl active:bg-slate-100 flex items-center justify-center"
+            aria-label="查看下个月"
+            @click="nextMonth"
+          >
             <ChevronRight class="w-4 h-4 text-slate-600" />
           </button>
         </div>
@@ -286,7 +294,8 @@ onMounted(() => {
           <!-- 管理员可修改 -->
           <button
             v-if="authStore.isAdmin"
-            class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 active:bg-slate-200"
+            class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 active:bg-slate-200"
+            aria-label="修改签到状态"
             @click="openEdit(record)"
           >
             <Edit3 class="w-4 h-4" />

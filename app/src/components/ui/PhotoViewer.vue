@@ -85,7 +85,8 @@ function onTouchEnd(e: TouchEvent) {
         <div class="flex items-center justify-between px-4 py-3 flex-shrink-0" style="padding-top: max(12px, env(safe-area-inset-top))">
           <span class="text-white/80 text-sm font-medium">{{ title || '照片' }}</span>
           <button
-            class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"
+            class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"
+            aria-label="关闭照片查看"
             @click="close"
           >
             <X class="w-5 h-5 text-white" />

@@ -39,7 +39,7 @@ function onInput(e: Event) {
         :placeholder="props.placeholder"
         :disabled="props.disabled"
         :class="[
-          'w-full border rounded-xl px-4 py-3 text-slate-800 bg-white transition-all duration-200',
+          'w-full h-11 border rounded-xl px-4 text-sm text-slate-800 bg-white transition-all duration-200',
           'focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100',
           'placeholder:text-slate-300',
           props.error ? 'border-red-400 focus:border-red-400 focus:ring-red-100' : 'border-slate-200',

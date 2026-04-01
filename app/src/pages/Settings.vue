@@ -454,7 +454,7 @@ function goToBackup() {
             <label class="block text-xs text-slate-500 mb-1">管理员默认班级</label>
             <select
               v-model="defaultClassAdmin"
-              class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
             >
               <option value="">未设置（自动取首个可见班级）</option>
               <option v-for="className in visibleClassesAdmin" :key="`admin-default-${className}`" :value="className">
@@ -485,7 +485,7 @@ function goToBackup() {
             <label class="block text-xs text-slate-500 mb-1">老师默认班级（可代老师设置）</label>
             <select
               v-model="defaultClassTeacher"
-              class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
             >
               <option value="">未设置（自动取首个可见班级）</option>
               <option v-for="className in visibleClassesTeacher" :key="`teacher-default-${className}`" :value="className">
@@ -530,7 +530,7 @@ function goToBackup() {
           <label class="block text-xs text-slate-500 mb-1">默认班级</label>
           <select
             v-model="myDefaultClass"
-            class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
+            class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100"
             :disabled="myVisibleClasses.length === 0"
           >
             <option value="">未设置（自动取首个可见班级）</option>

@@ -59,7 +59,8 @@ const isCurrentMonth = () => currentMonth.value.isSame(dayjs(), 'month')
       <!-- 月份选择器（仅出勤统计时显示） -->
       <div v-if="activeTab === 'attendance'" class="flex items-center justify-center gap-4 mt-3">
         <button
-          class="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm active:bg-slate-50"
+          class="w-11 h-11 flex items-center justify-center rounded-xl bg-white shadow-sm active:bg-slate-50"
+          aria-label="查看上个月"
           @click="prevMonth"
         >
           <ChevronLeft class="w-4 h-4 text-slate-600" />
@@ -68,8 +69,9 @@ const isCurrentMonth = () => currentMonth.value.isSame(dayjs(), 'month')
           {{ currentMonth.format('YYYY年M月') }}
         </span>
         <button
-          class="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm active:bg-slate-50"
+          class="w-11 h-11 flex items-center justify-center rounded-xl bg-white shadow-sm active:bg-slate-50"
           :class="{ 'opacity-30 pointer-events-none': isCurrentMonth() }"
+          aria-label="查看下个月"
           @click="nextMonth"
         >
           <ChevronRight class="w-4 h-4 text-slate-600" />

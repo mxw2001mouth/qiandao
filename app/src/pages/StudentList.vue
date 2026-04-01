@@ -155,7 +155,7 @@ function hoursTextClass(hours: number): string {
               </a>
               <a
                 :href="`tel:${student.parent_phone}`"
-                class="w-5 h-5 rounded-md bg-slate-100 text-slate-500 flex items-center justify-center active:scale-95 active:bg-slate-200 shrink-0"
+                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center active:scale-95 active:bg-slate-200 shrink-0"
                 aria-label="拨打家长电话"
                 @click.stop
               >

@@ -22,16 +22,16 @@ const variantClasses: Record<string, string> = {
 }
 
 const sizeClasses: Record<string, string> = {
-  sm: 'px-4 py-2 text-sm rounded-lg',
-  md: 'px-6 py-3 text-base rounded-xl',
-  lg: 'px-8 py-3.5 text-lg rounded-xl',
+  sm: 'h-11 px-4 text-sm rounded-xl',
+  md: 'h-11 px-6 text-base rounded-xl',
+  lg: 'h-12 px-8 text-lg rounded-xl',
 }
 </script>
 
 <template>
   <button
     :class="[
-      'inline-flex items-center justify-center font-medium transition-all duration-200',
+      'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-200',
       variantClasses[props.variant],
       sizeClasses[props.size],
       (props.loading || props.disabled) && 'opacity-60 pointer-events-none',

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Phone, Edit, UserX, ShoppingCart, Download, Image } from 'lucide-vue-next'
+import { Phone, Edit, UserX, ShoppingCart, Download } from 'lucide-vue-next'
 import type { Student, Attendance, LifecycleTag } from '../types'
 import { useStudentStore } from '../stores/student'
 import { useAuthStore } from '../stores/auth'
@@ -284,17 +284,6 @@ async function downloadPhoto() {
           </div>
         </div>
 
-        <!-- 查看合影按钮（醒目入口） -->
-        <AppButton
-          class="w-full"
-          :variant="dayModalPhoto ? 'primary' : 'secondary'"
-          :disabled="!dayModalPhoto"
-          @click="showPhotoModal = true"
-        >
-          <Image class="w-4 h-4 mr-1.5" />
-          {{ dayModalPhoto ? '查看签到合影' : '暂无签到合影' }}
-        </AppButton>
-
         <!-- 班级合影 -->
         <div v-if="dayModalPhoto" class="space-y-2">
           <div class="text-xs font-medium text-slate-500">班级合影（点击放大）</div>
@@ -316,6 +305,12 @@ async function downloadPhoto() {
           <p v-if="downloadMsg" class="text-xs text-center" :class="downloadMsg.includes('失败') ? 'text-red-500' : 'text-green-600'">
             {{ downloadMsg }}
           </p>
+        </div>
+        <div
+          v-else
+          class="rounded-xl border border-dashed border-slate-200 bg-slate-50 py-7 text-center text-sm text-slate-500"
+        >
+          暂无签到合影
         </div>
 
         <!-- 学生签到列表 -->

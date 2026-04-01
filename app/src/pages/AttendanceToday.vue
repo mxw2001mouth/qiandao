@@ -300,7 +300,7 @@ onMounted(async () => {
             v-if="classSelectOptions.length > 0"
             v-model="selectedClass"
             :disabled="alreadySubmitted"
-            class="min-w-[10rem] border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200 disabled:bg-slate-100 disabled:text-slate-400"
+            class="min-w-[10rem] border border-slate-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-100 disabled:text-slate-400"
           >
             <option v-for="item in classSelectOptions" :key="item.value" :value="item.value">
               {{ item.label }}
@@ -389,12 +389,13 @@ onMounted(async () => {
             <button
               v-for="btn in statusButtons"
               :key="btn.status"
-              class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150"
+              class="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-150"
               :class="attendanceStore.getStatus(student.id)?.status === btn.status
                 ? btn.activeClass
                 : 'bg-slate-100 text-slate-400'"
               :disabled="alreadySubmitted"
               :title="btn.label"
+              :aria-label="`${student.name}：${btn.label}`"
               @click="setStatus(student.id, btn.status)"
             >
               <component :is="btn.icon" class="w-3.5 h-3.5" />
