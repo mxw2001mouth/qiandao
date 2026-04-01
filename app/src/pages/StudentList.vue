@@ -186,6 +186,7 @@ function hoursTextClass(hours: number): string {
     <button
       v-if="auth.isAdmin"
       class="fixed right-5 bottom-24 w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-200 flex items-center justify-center active:scale-90 transition-transform z-30"
+      aria-label="新增学生"
       @click="goToAdd"
     >
       <Plus class="w-6 h-6" />
