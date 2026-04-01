@@ -9,6 +9,8 @@ app/node_modules/
 app/dist/
 app/dist-ssr/
 app/.vscode/
+app/docs/
+docs/
 
 # ── Capacitor 原生平台目录（由 CI 生成，不上传）──
 app/android/
@@ -19,8 +21,13 @@ Demo/
 app/*.local
 app/.env.local
 app/.env.*.local
+app/.tmp-*
+app/*.tmp
+app/*.temp
 app/*.err
 app/*.log
+*.tmp
+*.temp
 *.log
 
 # ── 仅用于浏览器调试的 WASM（不上传）──
